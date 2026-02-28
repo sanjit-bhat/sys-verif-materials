@@ -10,7 +10,11 @@ Module hashmap.
 
 Definition atomicPtr {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/hashmap.atomicPtr"%go [].
 
+#[global] Opaque atomicPtr.
+
 Definition HashMap {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/hashmap.HashMap"%go [].
+
+#[global] Opaque HashMap.
 
 Definition newAtomicPtr {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/hashmap.newAtomicPtr"%go.
 

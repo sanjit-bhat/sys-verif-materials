@@ -12,6 +12,8 @@ Module concurrent.
 
 Definition AtomicInt {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/concurrent.AtomicInt"%go [].
 
+#[global] Opaque AtomicInt.
+
 Definition NewAtomicInt {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/concurrent.NewAtomicInt"%go.
 
 Definition ParallelAdd1 {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/concurrent.ParallelAdd1"%go.

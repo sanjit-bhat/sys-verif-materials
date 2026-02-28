@@ -9,6 +9,8 @@ Module algo.
 
 Definition Person {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/algo.Person"%go [].
 
+#[global] Opaque Person.
+
 Definition Sort {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/algo.Sort"%go.
 
 (* Sort sorts arr by increasing Age.

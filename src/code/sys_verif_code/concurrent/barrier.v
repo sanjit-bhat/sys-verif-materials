@@ -11,6 +11,8 @@ Module barrier.
 
 Definition Barrier {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/concurrent/barrier.Barrier"%go [].
 
+#[global] Opaque Barrier.
+
 Definition New {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/concurrent/barrier.New"%go.
 
 (* Create a new barrier waiting for no threads.

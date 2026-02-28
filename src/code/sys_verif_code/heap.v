@@ -10,15 +10,27 @@ Module heap.
 
 Definition S1 {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap.S1"%go [].
 
+#[global] Opaque S1.
+
 Definition Stack {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap.Stack"%go [].
+
+#[global] Opaque Stack.
 
 Definition Queue {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap.Queue"%go [].
 
+#[global] Opaque Queue.
+
 Definition SearchTree {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap.SearchTree"%go [].
+
+#[global] Opaque SearchTree.
 
 Definition Person {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap.Person"%go [].
 
+#[global] Opaque Person.
+
 Definition Rect {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap.Rect"%go [].
+
+#[global] Opaque Rect.
 
 Definition BinarySearch {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/heap.BinarySearch"%go.
 
@@ -424,7 +436,7 @@ Definition Queue__Popⁱᵐᵖˡ {ext : ffi_syntax} {go_gctx : GoGlobalContext} 
     (if: ![go.bool] "ok"
     then return: (![go.uint64] "x", #true)
     else do:  #());;;
-    do:  ((MethodResolve Queue "emptyBack"%go (![Queue] "q")) #());;;
+    do:  ((MethodResolve (go.PointerType Queue) "emptyBack"%go "q") #());;;
     let: "ok2" := (GoAlloc go.bool (GoZeroVal go.bool #())) in
     let: ("$ret0", "$ret1") := ((MethodResolve (go.PointerType Stack) "Pop"%go (![go.PointerType Stack] (StructFieldRef Queue "front"%go "q"))) #()) in
     let: "$r0" := "$ret0" in

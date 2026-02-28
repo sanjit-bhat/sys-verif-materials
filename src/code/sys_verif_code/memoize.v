@@ -10,7 +10,11 @@ Module memoize.
 
 Definition Memoize {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/memoize.Memoize"%go [].
 
+#[global] Opaque Memoize.
+
 Definition MockMemoize {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/memoize.MockMemoize"%go [].
+
+#[global] Opaque MockMemoize.
 
 Definition NewMemoize {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/memoize.NewMemoize"%go.
 
@@ -63,19 +67,19 @@ Definition UseMemoize1ⁱᵐᵖˡ {ext : ffi_syntax} {go_gctx : GoGlobalContext}
     do:  ("m" <-[Memoize] "$r0");;;
     let: "y1" := (GoAlloc go.uint64 (GoZeroVal go.uint64 #())) in
     let: "$r0" := (let: "$a0" := #(W64 3) in
-    (MethodResolve Memoize "Call"%go (![Memoize] "m")) "$a0") in
+    (MethodResolve (go.PointerType Memoize) "Call"%go "m") "$a0") in
     do:  ("y1" <-[go.uint64] "$r0");;;
     do:  (let: "$a0" := ((![go.uint64] "y1") =⟨go.uint64⟩ #(W64 9)) in
     (FuncResolve std.Assert [] #()) "$a0");;;
     let: "y2" := (GoAlloc go.uint64 (GoZeroVal go.uint64 #())) in
     let: "$r0" := (let: "$a0" := #(W64 3) in
-    (MethodResolve Memoize "Call"%go (![Memoize] "m")) "$a0") in
+    (MethodResolve (go.PointerType Memoize) "Call"%go "m") "$a0") in
     do:  ("y2" <-[go.uint64] "$r0");;;
     do:  (let: "$a0" := ((![go.uint64] "y2") =⟨go.uint64⟩ #(W64 9)) in
     (FuncResolve std.Assert [] #()) "$a0");;;
     let: "y3" := (GoAlloc go.uint64 (GoZeroVal go.uint64 #())) in
     let: "$r0" := (let: "$a0" := #(W64 5) in
-    (MethodResolve Memoize "Call"%go (![Memoize] "m")) "$a0") in
+    (MethodResolve (go.PointerType Memoize) "Call"%go "m") "$a0") in
     do:  ("y3" <-[go.uint64] "$r0");;;
     do:  (let: "$a0" := ((![go.uint64] "y3") =⟨go.uint64⟩ #(W64 25)) in
     (FuncResolve std.Assert [] #()) "$a0");;;
@@ -107,11 +111,11 @@ Definition UseMemoize2ⁱᵐᵖˡ {ext : ffi_syntax} {go_gctx : GoGlobalContext}
     do:  ("m" <-[Memoize] "$r0");;;
     let: "y1" := (GoAlloc go.uint64 (GoZeroVal go.uint64 #())) in
     let: "$r0" := (let: "$a0" := #(W64 3) in
-    (MethodResolve Memoize "Call"%go (![Memoize] "m")) "$a0") in
+    (MethodResolve (go.PointerType Memoize) "Call"%go "m") "$a0") in
     do:  ("y1" <-[go.uint64] "$r0");;;
     let: "y2" := (GoAlloc go.uint64 (GoZeroVal go.uint64 #())) in
     let: "$r0" := (let: "$a0" := #(W64 3) in
-    (MethodResolve Memoize "Call"%go (![Memoize] "m")) "$a0") in
+    (MethodResolve (go.PointerType Memoize) "Call"%go "m") "$a0") in
     do:  ("y2" <-[go.uint64] "$r0");;;
     do:  (let: "$a0" := ((![go.uint64] "y1") =⟨go.uint64⟩ (![go.uint64] "y2")) in
     (FuncResolve std.Assert [] #()) "$a0");;;

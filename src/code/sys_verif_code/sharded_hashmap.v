@@ -10,11 +10,19 @@ Module sharded_hashmap.
 
 Definition entry {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/sharded_hashmap.entry"%go [].
 
+#[global] Opaque entry.
+
 Definition entryShard {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/sharded_hashmap.entryShard"%go [].
+
+#[global] Opaque entryShard.
 
 Definition bucket {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/sharded_hashmap.bucket"%go [].
 
+#[global] Opaque bucket.
+
 Definition HashMap {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/sharded_hashmap.HashMap"%go [].
+
+#[global] Opaque HashMap.
 
 Definition hash {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/sharded_hashmap.hash"%go.
 

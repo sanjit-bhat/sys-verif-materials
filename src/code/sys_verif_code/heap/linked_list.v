@@ -9,6 +9,8 @@ Module linked_list.
 
 Definition Node {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go.type := go.Named "sys_verif_code/heap/linked_list.Node"%go [].
 
+#[global] Opaque Node.
+
 Definition New {ext : ffi_syntax} {go_gctx : GoGlobalContext} : go_string := "sys_verif_code/heap/linked_list.New"%go.
 
 (* go: linked_list.go:8:6 *)

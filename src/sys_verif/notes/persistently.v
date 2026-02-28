@@ -373,12 +373,15 @@ Proof.
   }
   iIntros (v) "Hm".
   wp_auto.
+  wp_method_call; wp_auto.
   wp_apply (wp_Memoize__Call with "[$Hm]") as "Hm".
   wp_apply wp_Assert.
   { rewrite bool_decide_eq_true_2 //. }
+  wp_method_call; wp_auto.
   wp_apply (wp_Memoize__Call with "[$Hm]") as "Hm".
   wp_apply wp_Assert.
   { rewrite bool_decide_eq_true_2 //. }
+  wp_method_call; wp_auto.
   wp_apply (wp_Memoize__Call with "[$Hm]") as "Hm".
   wp_apply wp_Assert.
   { rewrite bool_decide_eq_true_2 //. }
@@ -470,7 +473,9 @@ The rest of this proof is general loop and slice reasoning and not related to th
   iIntros (m) "Hm". (* {GOAL} *)
   (*| Here we come back from calling `NewMemoize`. As in `UseMemoize1`, all the hard work is done and calling the new object is easy. |*)
   wp_auto.
+  wp_method_call; wp_auto.
   wp_apply (wp_Memoize__Call with "[$Hm]") as "Hm".
+  wp_method_call; wp_auto.
   wp_apply (wp_Memoize__Call with "[$Hm]") as "Hm".
   wp_apply (wp_Assert).
   { rewrite bool_decide_eq_true_2 //. }
