@@ -99,8 +99,7 @@ Let's see how this is realized in Rocq for this example.
 
 From sys_verif.program_proof Require Import prelude empty_ffi.
 From sys_verif.program_proof Require Import concurrent_init.
-(* use Perennial's ghost var, which is more modern than the upstream one *)
-From Perennial.algebra Require Import ghost_var.
+From New.ghost Require Import dghost_var.
 
 Open Scope Z_scope.
 
@@ -109,7 +108,6 @@ Section proof.
 Context `{hG: !heapGS Σ} {sem : go.Semantics} {package_sem : concurrent.Assumptions}.
 Collection W := sem + package_sem.
 Set Default Proof Using "W".
-Context `{!ghost_varG Σ w64}.
 
 Implicit Types (γ: gname).
 
@@ -123,7 +121,7 @@ Remember that there are always two perspectives on a specification: what does it
 |*)
 
 Definition own_int γ (x: w64) :=
-  ghost_var γ (DfracOwn (1/2)) x.
+  dghost_var γ (DfracOwn (1/2)) x.
 
 #[global] Opaque own_int.
 #[local ] Transparent own_int.
@@ -136,7 +134,7 @@ Proof. apply _. Qed.
 #[local] Definition lock_inv γ (l: loc) : iProp _ :=
   ∃ (x: w64),
       "Hx" ∷ l.[concurrent.AtomicInt.t, "x"] ↦ x ∗
-      "Hauth" ∷ ghost_var γ (DfracOwn (1/2)) x.
+      "Hauth" ∷ dghost_var γ (DfracOwn (1/2)) x.
 
 Definition is_atomic_int γ (l: loc) : iProp _ :=
   ∃ (mu_l: loc),
@@ -162,7 +160,7 @@ Proof.
   iStructNamedPrefix "Hint" "H".
   simpl.
   iPersist "Hmu".
-  iMod (ghost_var_alloc (W64 0)) as (γ) "Hown".
+  iMod (dghost_var_alloc (W64 0)) as (γ) "Hown".
   iDestruct "Hown" as "[Hown Hauth]".
   iMod (init_Mutex (lock_inv γ l) with "mu [$Hauth $Hx]") as "Hlock".
   wp_auto.
@@ -187,9 +185,9 @@ Proof.
   wp_auto.
 
   (* we will need the x from the user to agree with the x0 in the lock invariant to show that the new value is correct *)
-  iDestruct (ghost_var_agree with "Hown Hauth") as %Heq; subst x0.
+  iDestruct (dghost_var_agree with "Hown Hauth") as %Heq; subst x0.
   (* before we release the lock, we need to update the ghost variable *)
-  iMod (ghost_var_update_2 (word.add x y) with "Hauth Hown") as "[Hauth Hown]".
+  iMod (dghost_var_update_2 (word.add x y) with "Hauth Hown") as "[Hauth Hown]".
   { rewrite dfrac_op_own Qp.half_half //. }
 
   wp_apply (wp_Mutex__Unlock with "[$Hlock $Hlocked Hauth Hx]").
@@ -235,7 +233,7 @@ Proof.
   (* before we release the lock, we need to "fire" the user's fupd with [iMod]. *)
   iApply fupd_wp.
   iMod "Hau" as (x0) "[Hown Hclose]".
-  iDestruct (ghost_var_agree with "Hauth Hown") as %Heq; subst x0.
+  iDestruct (dghost_var_agree with "Hauth Hown") as %Heq; subst x0.
   iMod ("Hclose" with "Hown") as "HQ".
   iModIntro.
 
@@ -273,7 +271,7 @@ Proof.
 
   iApply fupd_wp.
   iMod "Hau" as (x0) "[Hown Hclose]".
-  iDestruct (ghost_var_agree with "Hauth Hown") as %Heq; subst x0.
+  iDestruct (dghost_var_agree with "Hauth Hown") as %Heq; subst x0.
   iMod ("Hclose" with "Hown") as "HΦ".
   iModIntro.
 
@@ -305,8 +303,8 @@ Proof.
   (* before we release the lock, we "fire" the user's fupd *)
   iApply fupd_wp.
   iMod "Hau" as (x0) "[Hown Hclose]".
-  iDestruct (ghost_var_agree with "Hauth Hown") as %Heq; subst x0.
-  iMod (ghost_var_update_2 (word.add x y) with "Hauth Hown") as "[Hauth Hown]".
+  iDestruct (dghost_var_agree with "Hauth Hown") as %Heq; subst x0.
+  iMod (dghost_var_update_2 (word.add x y) with "Hauth Hown") as "[Hauth Hown]".
   { rewrite dfrac_op_own Qp.half_half //. }
   iMod ("Hclose" with "Hown") as "HΦ".
   iModIntro.
@@ -359,8 +357,8 @@ Section proof.
 Context `{hG: !heapGS Σ} {sem : go.Semantics} {package_sem : concurrent.Assumptions}.
 Collection W := sem + package_sem.
 Set Default Proof Using "W".
-Context `{ghost_varG0: ghost_varG Σ w64}.
-Context `{ghost_varG1: ghost_varG Σ Z}.
+Context `{dghost_varG0: dghost_varG Σ w64}.
+Context `{dghost_varG1: dghost_varG Σ Z}.
 
 Let N := nroot .@ "inv".
 
@@ -371,15 +369,15 @@ Unlike the proof before, which only used the one lock invariant, we will also us
 #[local] Definition add_inv γint γ1 γ2 : iProp Σ :=
     (∃ (x: w64) (x1 x2: Z),
     "Hint" ∷ atomic_int.own_int γint x ∗
-    "Hx1" ∷ ghost_var γ1 (DfracOwn (1/2)) x1 ∗
-    "Hx2" ∷ ghost_var γ2 (DfracOwn (1/2)) x2 ∗
+    "Hx1" ∷ dghost_var γ1 (DfracOwn (1/2)) x1 ∗
+    "Hx2" ∷ dghost_var γ2 (DfracOwn (1/2)) x2 ∗
     "%Hsum" ∷ ⌜x1 ≤ 2 ∧ x2 ≤ 2 ∧ uint.Z x = (x1 + x2)%Z⌝)%I.
 
 Lemma wp_ParallelAdd1 :
   {{{ is_pkg_init concurrent }}}
     @! concurrent.ParallelAdd1 #()
   {{{ (x: w64), RET #x; ⌜uint.Z x = 4⌝ }}}.
-Proof using ghost_varG0 ghost_varG1 W.
+Proof using dghost_varG0 dghost_varG1 W.
   wp_start as "_".
   wp_auto.
 
@@ -389,8 +387,8 @@ Proof using ghost_varG0 ghost_varG1 W.
   wp_auto.
 
   (* Create the ghost variables, then initialize the invariant. *)
-  iMod (ghost_var_alloc 0) as (γ1) "[Hv1_1 Hx1_2]".
-  iMod (ghost_var_alloc 0) as (γ2) "[Hv2_1 Hx2_2]".
+  iMod (dghost_var_alloc 0) as (γ1) "[Hv1_1 Hx1_2]".
+  iMod (dghost_var_alloc 0) as (γ2) "[Hv2_1 Hx2_2]".
   iMod (inv_alloc N _ (add_inv γint γ1 γ2) with "[Hint Hv1_1 Hv2_1]") as "#Hinv".
   {
     iModIntro.
@@ -400,7 +398,7 @@ Proof using ghost_varG0 ghost_varG1 W.
   iPersist "i".
 
   (* This postcondition is the same. *)
-  wp_apply (std.wp_Spawn (ghost_var γ1 (DfracOwn (1/2)) 2) with "[Hx1_2]").
+  wp_apply (std.wp_Spawn (dghost_var γ1 (DfracOwn (1/2)) 2) with "[Hx1_2]").
   { clear Φ.
     iRename "Hx1_2" into "Hx".
     iIntros (Φ) "HΦ".
@@ -417,8 +415,8 @@ Proof using ghost_varG0 ghost_varG1 W.
     iMod "Hmask" as "_". (* {GOAL} *)
 
     (* Now we need to restore the invariant to get the mask back to normal. *)
-    iDestruct (ghost_var_agree with "Hx Hx1_inv") as %Heq; subst.
-    iMod (ghost_var_update_2 2 with "Hx Hx1_inv") as "[Hx Hx1_inv]".
+    iDestruct (dghost_var_agree with "Hx Hx1_inv") as %Heq; subst.
+    iMod (dghost_var_update_2 2 with "Hx Hx1_inv") as "[Hx Hx1_inv]".
     { rewrite dfrac_op_own Qp.half_half //. }
     iMod ("Hclose" with "[Hint_inv Hx1_inv Hx2_inv]").
     { iFrame.
@@ -434,7 +432,7 @@ Proof using ghost_varG0 ghost_varG1 W.
   wp_auto.
 
   (* the other thread has a copy-pasted proof *)
-  wp_apply (std.wp_Spawn (ghost_var γ2 (DfracOwn (1/2)) 2) with "[Hx2_2]").
+  wp_apply (std.wp_Spawn (dghost_var γ2 (DfracOwn (1/2)) 2) with "[Hx2_2]").
   { clear Φ.
     iRename "Hx2_2" into "Hx".
     iIntros (Φ) "HΦ".
@@ -450,8 +448,8 @@ Proof using ghost_varG0 ghost_varG1 W.
     iMod "Hmask" as "_".
 
     (* Now restore invariant *)
-    iDestruct (ghost_var_agree with "Hx Hx2_inv") as %Heq; subst.
-    iMod (ghost_var_update_2 2 with "Hx Hx2_inv") as "[Hx Hx2_inv]".
+    iDestruct (dghost_var_agree with "Hx Hx2_inv") as %Heq; subst.
+    iMod (dghost_var_update_2 2 with "Hx Hx2_inv") as "[Hx Hx2_inv]".
     { rewrite dfrac_op_own Qp.half_half //. }
     iMod ("Hclose" with "[Hint_inv Hx1_inv Hx2_inv]").
     { iFrame.
@@ -476,8 +474,8 @@ Proof using ghost_varG0 ghost_varG1 W.
   iInv "Hinv" as ">HI" "Hclose".
   iApply fupd_mask_intro; [ solve_ndisj | iIntros "Hmask" ].
   iNamedSuffix "HI" "_inv".
-  iDestruct (ghost_var_agree with "Hx1_inv Hx1_2") as %->.
-  iDestruct (ghost_var_agree with "Hx2_inv Hx2_2") as %->.
+  iDestruct (dghost_var_agree with "Hx1_inv Hx1_2") as %->.
+  iDestruct (dghost_var_agree with "Hx2_inv Hx2_2") as %->.
   iFrame "Hint_inv". iIntros "Hint_inv".
   iMod "Hmask" as "_".
   iMod ("Hclose" with "[Hint_inv Hx1_inv Hx2_inv]").

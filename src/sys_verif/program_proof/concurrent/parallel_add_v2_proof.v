@@ -1,6 +1,6 @@
-From iris.base_logic.lib Require Import ghost_var.
 From iris.algebra Require Import frac_auth.
 
+From New.ghost Require Import all dghost_var.
 From sys_verif.program_proof Require Import prelude empty_ffi.
 From sys_verif.program_proof Require Import concurrent_init.
 From sys_verif.program_proof Require Import demos.barrier_proof.
@@ -11,9 +11,7 @@ Section proof.
   Collection W := sem + package_sem.
   Set Default Proof Using "W".
 
-  Context `{barrierG0: barrier.barrierG Σ}.
-  Context `{inG0: !inG Σ (frac_authR ZR)}.
-
+  (* TODO: need copy of iris frac_auth.v for this to work *)
   Definition lock_inv γ l : iProp _ :=
     ∃ (x: w64),
       "x" ∷ l ↦ x ∗

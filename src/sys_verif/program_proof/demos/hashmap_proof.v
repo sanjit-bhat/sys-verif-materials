@@ -16,7 +16,7 @@ From sys_verif.program_proof Require Import prelude empty_ffi.
 
 From New.proof Require Import sync.
 From New.generatedproof.sys_verif_code Require Import hashmap.
-From Perennial.algebra Require Import ghost_var.
+From New.ghost Require Import dghost_var.
 
 Module atomic_ptr.
 Section proof.
@@ -24,7 +24,7 @@ Section proof.
   Collection W := sem + package_sem.
   Set Default Proof Using "W".
 
-  Context `{!ghost_varG Σ loc}.
+  Context `{!dghost_varG Σ loc}.
 
   Implicit Types (γ: gname).
 
@@ -32,7 +32,7 @@ Section proof.
   #[global] Instance : GetIsPkgInitWf (iProp Σ) hashmap := build_get_is_pkg_init_wf.
 
   Definition own_ptr γ (x: loc) :=
-    ghost_var γ (DfracOwn (1/2)) x.
+    dghost_var γ (DfracOwn (1/2)) x.
 
   #[global] Instance own_ptr_timeless γ x : Timeless (own_ptr γ x).
   Proof. apply _. Qed.
@@ -40,7 +40,7 @@ Section proof.
   #[local] Definition lock_inv γ l : iProp _ :=
     ∃ (mref: loc),
       "val" ∷ l.[hashmap.atomicPtr.t, "val"] ↦ mref ∗
-      "Hauth" ∷ ghost_var γ (DfracOwn (1/2)) mref.
+      "Hauth" ∷ dghost_var γ (DfracOwn (1/2)) mref.
 
   Definition is_atomic_ptr γ (l: loc) : iProp _ :=
     ∃ (mu_l: loc),
@@ -63,7 +63,7 @@ Section proof.
     (* iStructNamed "Hptr". FIXME: should say what the non-fresh name is. *)
     iStructNamedPrefix "Hptr" "H". simpl.
     iPersist "Hmu".
-    iMod (ghost_var_alloc m_ref) as (γ) "[Hown Hauth]".
+    iMod (dghost_var_alloc m_ref) as (γ) "[Hown Hauth]".
     iMod (init_Mutex (lock_inv γ l)
            with "mu [Hauth Hval]") as "Hlock".
     { iFrame. }
@@ -88,7 +88,7 @@ Section proof.
 
     iApply fupd_wp.
     iMod "Hau" as (x0) "[Hown Hclose]".
-    iDestruct (ghost_var_agree with "Hauth Hown") as %Heq; subst x0.
+    iDestruct (dghost_var_agree with "Hauth Hown") as %Heq; subst x0.
     iMod ("Hclose" with "Hown") as "HΦ".
     iModIntro.
 
@@ -116,8 +116,8 @@ Section proof.
 
     iApply fupd_wp.
     iMod "Hau" as (x0) "[Hown Hclose]".
-    iDestruct (ghost_var_agree with "Hauth Hown") as %Heq; subst x0.
-    iMod (ghost_var_update_2 y with "Hauth Hown") as "[Hauth Hown]".
+    iDestruct (dghost_var_agree with "Hauth Hown") as %Heq; subst x0.
+    iMod (dghost_var_update_2 y with "Hauth Hown") as "[Hauth Hown]".
     { rewrite dfrac_op_own Qp.half_half //. }
     iMod ("Hclose" with "Hown") as "HΦ".
     iModIntro.
@@ -141,9 +141,6 @@ Section proof.
   Collection W := sem + package_sem.
   Set Default Proof Using "W".
 
-  Context `{!ghost_varG Σ loc}.
-  Context `{!ghost_varG Σ (gmap w64 w64)}.
-
   Let N := nroot .@ "hashmap".
 
   (* This hashmap implementation has an atomic pointer to a read-only copy of the
@@ -160,7 +157,7 @@ Section proof.
    *)
 
   Definition own_hashmap γ (m: gmap w64 w64) :=
-    ghost_var γ (DfracOwn (1/2)) m.
+    dghost_var γ (DfracOwn (1/2)) m.
 
   #[global] Instance own_hashmap_timeless γ m : Timeless (own_hashmap γ m).
   Proof. apply _. Qed.
@@ -169,11 +166,11 @@ Section proof.
     ∃ (mref: loc) (m: gmap w64 w64),
     "Hptr" ∷ atomic_ptr.own_ptr γ_ptr mref ∗
     "#Hm_clean" ∷ own_map mref DfracDiscarded m ∗
-    "Hm_var" ∷ ghost_var γ (DfracOwn (1/4)) m.
+    "Hm_var" ∷ dghost_var γ (DfracOwn (1/4)) m.
 
   Definition lock_inv (γ_map: gname): iProp _ :=
     ∃ (m: gmap w64 w64),
-     "Hm_lock" ∷ ghost_var γ_map (DfracOwn (1/4)) m
+     "Hm_lock" ∷ dghost_var γ_map (DfracOwn (1/4)) m
   .
 
   Definition is_hashmap γ γ_ptr (l: loc) : iProp _ :=
@@ -195,7 +192,7 @@ Section proof.
     wp_auto.
     wp_apply wp_map_make1 as "%mref Hm".
     iPersist "Hm".
-    iMod (ghost_var_alloc (∅: gmap w64 w64)) as (γ) "[[Hm_inv Hm_lock_inv] Hm_user]".
+    iMod (dghost_var_alloc (∅: gmap w64 w64)) as (γ) "[[Hm_inv Hm_lock_inv] Hm_user]".
     wp_apply (wp_newAtomicPtr mref).
     iIntros (γ_ptr ptr_l) "[Hptr Hown_ptr]".
     wp_auto.
@@ -274,7 +271,7 @@ Section proof.
     (* this is the crucial information we learn from opening the invariant
     (other than this, we open and close it as-is, since this operation is
     read-only) *)
-    iDestruct (ghost_var_agree with "Hm_var_inv Hm") as %<-.
+    iDestruct (dghost_var_agree with "Hm_var_inv Hm") as %<-.
     iMod ("Hau" with "Hm") as "HΦ".
 
     (* Close the hashmap invariant *)
@@ -292,7 +289,7 @@ Section proof.
   (* The spec of this helper is a bit complicated since it is called with the
   lock held, hence a decent amount of context has to be passed in the
   precondition. The important part of the spec is that [m] is the current
-  abstract state due to the [ghost_var] premise, and it is exactly the map
+  abstract state due to the [dghost_var] premise, and it is exactly the map
   returned as physical state. We can also see the spec returns [own_map] with a
   fraction of [1] due to the deep copy here. *)
   Lemma wp_HashMap__dirty (γ γ_ptr: gname) l (ptr_l: loc) (m: gmap w64 w64) :
@@ -300,11 +297,11 @@ Section proof.
         "#clean" ∷ l.[hashmap.HashMap.t, "clean"] ↦□ ptr_l ∗
         "#Hclean" ∷ is_atomic_ptr γ_ptr ptr_l ∗
         "#Hinv" ∷ inv N (hashmap_inv γ γ_ptr) ∗
-        "Hm_lock" ∷ ghost_var γ (DfracOwn (1/4)) m }}}
+        "Hm_lock" ∷ dghost_var γ (DfracOwn (1/4)) m }}}
       l @! (go.PointerType hashmap.HashMap) @! "dirty" #()
     {{{ (mref: loc), RET #mref;
       own_map mref (DfracOwn 1) m ∗
-      ghost_var γ (DfracOwn (1/4)) m }}}.
+      dghost_var γ (DfracOwn (1/4)) m }}}.
   Proof.
     wp_start as "Hpre". iNamed "Hpre".
     wp_auto.
@@ -322,7 +319,7 @@ Section proof.
 
     (* Obtain that the map values agree *)
     iMod "Hmask" as "_".
-    iDestruct (ghost_var_agree with "Hm_var_inv Hm_lock") as %<-.
+    iDestruct (dghost_var_agree with "Hm_var_inv Hm_lock") as %<-.
 
     (* Close the invariant *)
     iMod ("Hclose_inv" with "[Hptr_inv Hm_var_inv]").
@@ -369,11 +366,11 @@ Section proof.
     iFrame "Hptr_inv". iIntros "Hptr_inv".
 
     (* Update ghost variables and execute user's AU *)
-    iDestruct (ghost_var_agree with "Hm_var_inv Hm_lock") as %<-.
-    iDestruct (ghost_var_agree with "Hm_var_inv Hown") as %<-.
+    iDestruct (dghost_var_agree with "Hm_var_inv Hm_lock") as %<-.
+    iDestruct (dghost_var_agree with "Hm_var_inv Hown") as %<-.
     iCombine "Hm_lock Hm_var_inv" as "Hm1".
     rewrite Qp.quarter_quarter.
-    iMod (ghost_var_update_2 (<[key:=val]> m1) with "Hm1 Hown") as "[Hm1 Hown]".
+    iMod (dghost_var_update_2 (<[key:=val]> m1) with "Hm1 Hown") as "[Hm1 Hown]".
     { rewrite dfrac_op_own Qp.half_half //. }
     iDestruct "Hm1" as "[Hm_lock Hm_var_inv]".
     iMod ("Hclose_au" with "Hown") as "HΦ".
@@ -425,11 +422,11 @@ Section proof.
     iFrame "Hptr_inv". iIntros "Hptr_inv".
 
     (* Update ghost variables and execute user's AU *)
-    iDestruct (ghost_var_agree with "Hm_var_inv Hm_lock") as %<-.
-    iDestruct (ghost_var_agree with "Hm_var_inv Hown") as %<-.
+    iDestruct (dghost_var_agree with "Hm_var_inv Hm_lock") as %<-.
+    iDestruct (dghost_var_agree with "Hm_var_inv Hown") as %<-.
     iCombine "Hm_lock Hm_var_inv" as "Hm1".
     rewrite Qp.quarter_quarter.
-    iMod (ghost_var_update_2 (delete key m1) with "Hm1 Hown") as "[Hm1 Hown]".
+    iMod (dghost_var_update_2 (delete key m1) with "Hm1 Hown") as "[Hm1 Hown]".
     { rewrite dfrac_op_own Qp.half_half //. }
     iDestruct "Hm1" as "[Hm_lock Hm_var_inv]".
     iMod ("Hclose_au" with "Hown") as "HΦ".

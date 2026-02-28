@@ -138,7 +138,7 @@ From sys_verif.program_proof Require Import prelude empty_ffi.
 From New.proof Require Import std sync.
 From New.generatedproof.sys_verif_code Require Import concurrent.
 From sys_verif.program_proof Require Import concurrent_init.
-From Perennial.algebra Require Import ghost_var.
+From New.ghost Require Import all dghost_var.
 
 Section goose.
 Context `{hG: !heapGS Σ}.
@@ -146,7 +146,6 @@ Context {sem : go.Semantics} {package_sem : concurrent.Assumptions}.
 Collection W := sem + package_sem.
 Set Default Proof Using "W".
 
-Context `{ghost_varG0: ghost_varG Σ Z}.
 Open Scope Z_scope.
 
 (*|
@@ -157,7 +156,7 @@ The first example we'll see is so-called "plain" ghost variables. These aren't q
 
 The library hides the literal `own` construct in Iris behind some sealing machinery. Despite this, we can still print its definition with the following:
 |*)
-Print ghost_var.ghost_var_def. (* {OUTPUT} *)
+Print dghost_var.dghost_var_def. (* {OUTPUT} *)
 
 (*| The actual value passed to `own` uses `dfrac_agree.to_frac_agree`, which constructs an element of the dfrac_agree RA; that's the actual RA as defined in Iris.
 
@@ -165,22 +164,22 @@ Print ghost_var.ghost_var_def. (* {OUTPUT} *)
 
 |*)
 
-Lemma ghost_var_change_ex1 γ :
-  ghost_var γ (DfracOwn 1) 7%Z -∗ |==> ghost_var γ (DfracOwn 1) 23%Z.
+Lemma dghost_var_change_ex1 γ :
+  dghost_var γ 1 7%Z -∗ |==> dghost_var γ 1 23%Z.
 Proof.
   iIntros "H".
   (* We use `iMod` to "execute" a ghost update. This is only legal because the
   goal allows it, which is true for a goal that starts with `|==>` (as we have
   here) or a WP goal. *)
-  iMod (ghost_var_update 23%Z with "H") as "H".
+  iMod (dghost_var_update 23%Z with "H") as "H".
   (* _After_ we're done doing ghost updates, we can remove the update modality
   from the goal with iModIntro. *)
   iModIntro.
   iExact "H".
 Qed.
 
-(*| Here's a special case allocation lemma for this particular type of ghost state. (I'm using `@ghost_var_alloc Σ` rather than `ghost_var_alloc` to reduce some noise in the output.) |*)
-Check (@ghost_var_alloc Σ). (* {OUTPUT} *)
+(*| Here's a special case allocation lemma for this particular type of ghost state. (I'm using `@dghost_var_alloc Σ` rather than `dghost_var_alloc` to reduce some noise in the output.) |*)
+Check (@dghost_var_alloc Σ). (* {OUTPUT} *)
 
 (*| ### Discardable fractions
 
@@ -204,11 +203,11 @@ The first is the "discard" part of discardable fractions, and it means we have t
 
 |*)
 
-Check (@ghost_var_persist Σ). (* {OUTPUT} *)
+Check (@dghost_var_persist Σ). (* {OUTPUT} *)
 
 (*| The second property about persistence is what makes discardable fractions especially useful: |*)
 
-(* Check (@ghost_var_persistent Σ). (* {OUTPUT} *) *)
+(* Check (@dghost_var_persistent Σ). (* {OUTPUT} *) *)
 
 (*| ### Proof of the ParallelAdd example
 
@@ -227,8 +226,8 @@ We also maintain that both ghost variables are less than 2 so that we can prove 
 |*)
 Definition lock_inv γ1 γ2 l : iProp _ :=
   ∃ (x: w64) (x1 x2: Z),
-    "Hx1" :: ghost_var γ1 (DfracOwn (1/2)) x1 ∗
-    "Hx2" :: ghost_var γ2 (DfracOwn (1/2)) x2 ∗
+    "Hx1" :: dghost_var γ1 (DfracOwn (1/2)) x1 ∗
+    "Hx2" :: dghost_var γ2 (DfracOwn (1/2)) x2 ∗
     "x" ∷ l ↦ x ∗
     "%Hsum" ∷ ⌜x1 ≤ 2 ∧ x2 ≤ 2 ∧ uint.Z x = (x1 + x2)%Z⌝.
 
@@ -238,8 +237,8 @@ Lemma wp_ParallelAdd3 :
   {{{ (x: w64), RET #x; ⌜uint.Z x = 4⌝ }}}.
 Proof using All.
   wp_start as "_".
-  iMod (ghost_var_alloc 0) as (γ1) "[Hv1_1 Hx1_2]".
-  iMod (ghost_var_alloc 0) as (γ2) "[Hv2_1 Hx2_2]".
+  iMod (dghost_var_alloc 0) as (γ1) "[Hv1_1 Hx1_2]".
+  iMod (dghost_var_alloc 0) as (γ2) "[Hv2_1 Hx2_2]".
   wp_auto.
   wp_alloc m_l as "Hm".
   wp_auto.
@@ -250,14 +249,14 @@ Proof using All.
   (*| Observe here that the `init_Mutex` above has consumed the plain mutex value and associated it with a chosen lock invariant. Importantly, we couldn't actually use the `wp_Mutex__Lock` specification before using `init_Mutex`. |*)
   iPersist "m".
 
-  wp_apply (wp_Spawn (ghost_var γ1 (DfracOwn (1/2)) 2) with "[Hx1_2]").
+  wp_apply (wp_Spawn (dghost_var γ1 (DfracOwn (1/2)) 2) with "[Hx1_2]").
   { clear Φ.
     iIntros (Φ) "HΦ".
     wp_auto.
     wp_apply (wp_Mutex__Lock with "[$Hlock]"). iIntros "[locked Hinv]". iNamed "Hinv".
     wp_auto.
-    iDestruct (ghost_var_agree with "Hx1_2 Hx1") as %Heq; subst.
-    iMod (ghost_var_update_2 2 with "Hx1_2 Hx1") as "[Hx1_2 Hx1]".
+    iDestruct (dghost_var_agree with "Hx1_2 Hx1") as %Heq; subst.
+    iMod (dghost_var_update_2 2 with "Hx1_2 Hx1") as "[Hx1_2 Hx1]".
     { rewrite dfrac_op_own Qp.half_half //. }
     wp_apply (wp_Mutex__Unlock with "[-HΦ Hx1_2 $Hlock $locked]").
     { iFrame. iPureIntro. split_and!; try word. }
@@ -267,14 +266,14 @@ Proof using All.
   iIntros (h_1) "#Hjh1".
   wp_auto.
 
-  wp_apply (wp_Spawn (ghost_var γ2 (DfracOwn (1/2)) 2) with "[Hx2_2]").
+  wp_apply (wp_Spawn (dghost_var γ2 (DfracOwn (1/2)) 2) with "[Hx2_2]").
   { clear Φ.
     iIntros (Φ) "HΦ".
     wp_auto.
     wp_apply (wp_Mutex__Lock with "[$Hlock]"). iIntros "[locked Hinv]". iNamed "Hinv".
     wp_auto.
-    iDestruct (ghost_var_agree with "Hx2_2 Hx2") as %Heq; subst.
-    iMod (ghost_var_update_2 2 with "Hx2_2 Hx2") as "[Hx2_2 Hx2]".
+    iDestruct (dghost_var_agree with "Hx2_2 Hx2") as %Heq; subst.
+    iMod (dghost_var_update_2 2 with "Hx2_2 Hx2") as "[Hx2_2 Hx2]".
     { rewrite dfrac_op_own Qp.half_half //. }
     wp_apply (wp_Mutex__Unlock with "[-HΦ Hx2_2 $Hlock $locked]").
     { iFrame.
@@ -289,8 +288,8 @@ Proof using All.
   wp_apply (wp_JoinHandle__Join with "[$Hjh2]").
   iIntros "Hx2_2". wp_auto.
   wp_apply (wp_Mutex__Lock with "[$Hlock]"). iIntros "[locked Hinv]". iNamed "Hinv".
-  iDestruct (ghost_var_agree with "Hx1_2 Hx1") as %Heq; subst.
-  iDestruct (ghost_var_agree with "Hx2_2 Hx2") as %Heq; subst.
+  iDestruct (dghost_var_agree with "Hx1_2 Hx1") as %Heq; subst.
+  iDestruct (dghost_var_agree with "Hx2_2 Hx2") as %Heq; subst.
   wp_auto.
   wp_apply (wp_Mutex__Unlock with "[$locked $Hlock Hx1 Hx2 x]").
   { iFrame. iPureIntro. split_and!; word. }
