@@ -29,7 +29,7 @@ The reason there is a separate (and more sophisticated) library is related to th
 :::
 
 |*)
-From iris.base_logic.lib Require Import saved_prop.
+From New.ghost Require Import all saved_prop.
 From sys_verif.program_proof Require Import demos.auth_set.
 From sys_verif.program_proof Require Import prelude empty_ffi.
 From New.proof Require Import std sync.
@@ -50,19 +50,6 @@ Record barrier_names :=
   { recv_prop_name: gname;
     send_names_name: gname;
   }.
-
-(* Boilerplate setup for ghost state required. You can safely ignore anything
-related to [Σ] as an Iris technicality. *)
-Class barrierG Σ := BarrierG {
-    barrier_saved_propG :: savedPropG Σ;
-    barrier_auth_setG :: auth_setG Σ gname;
-  }.
-
-Definition barrierΣ: gFunctors :=
-  #[ savedPropΣ; auth_setΣ gname; syncΣ ].
-
-#[global] Instance subG_barrierG Σ : subG barrierΣ Σ → barrierG Σ.
-Proof. solve_inG. Qed.
 
 Section proof.
   Context `{hG: heapGS Σ} `{!ffi_semantics _ _}
@@ -194,7 +181,7 @@ In this section we show how the custom ghost state defined for this library is u
     available ghost names is infinite but the used names [sendNames] is finite,
     it's always possible to allocate such a name, and there's a "cofinite"
     allocation lemma to do just this. *)
-    iMod (saved_prop_alloc_cofinite sendNames P DfracDiscarded)
+    iMod (saved_prop_alloc_cofinite P sendNames DfracDiscarded)
       as (γS) "[%Hfresh #Hsend]".
     { done. }
     iMod (auth_set_alloc γS with "HsendNames_auth") as "[HsendNames_auth HγS]".
