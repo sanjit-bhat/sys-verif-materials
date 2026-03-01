@@ -1,6 +1,6 @@
 module sys_verif_code
 
-go 1.25
+go 1.26
 
 require (
 	github.com/goose-lang/std v0.7.0
