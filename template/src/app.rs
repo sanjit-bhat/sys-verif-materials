@@ -63,7 +63,7 @@ enum Command {
         /// Path to .v Coq template.
         template: PathBuf,
     },
-    /// Create student repo (sys-verif-fa25-proofs).
+    /// Create student repo (sys-verif-fa26-proofs).
     Repo {
         /// Output directory. Defaults to ./_built. Safe to run on top of the
         /// student repo, but also won't try to delete anything that shouldn't
@@ -71,7 +71,7 @@ enum Command {
         #[arg(default_value = "./_built")]
         output: PathBuf,
     },
-    /// Translate literate files for website repo (sys-verif-fa25).
+    /// Translate literate files for website repo (sys-verif-fa26).
     Web {
         /// Output directory. Defaults to ./_web.
         #[arg(default_value = "./_web")]

@@ -10,10 +10,10 @@ shortTitle: "Demo: fibonacci"
 (* /ONLY-WEB *)
 (*| # Demo: verifying fibonacci function
 
-> The Rocq code for this file is at [src/sys_verif/program_proof/demos/fibonacci_proof.v](https://github.com/tchajed/sys-verif-fa25-proofs/blob/main/src/sys_verif/program_proof/demos/fibonacci_proof.v).
+> The Rocq code for this file is at [src/sys_verif/program_proof/demos/fibonacci_proof.v](https://github.com/tchajed/sys-verif-fa26-proofs/blob/main/src/sys_verif/program_proof/demos/fibonacci_proof.v).
 
 The code in
-[go/functional/functional.go](https://github.com/tchajed/sys-verif-fa25-proofs/blob/main/go/functional/functional.go)
+[go/functional/functional.go](https://github.com/tchajed/sys-verif-fa26-proofs/blob/main/go/functional/functional.go)
 implements `func Fibonacci(n uint6) uint64`, computing the nth Fibonacci number.
 
 We prove this function correct, proving that the imperative, loop-based

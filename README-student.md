@@ -5,7 +5,7 @@ taught at UW-Madison in Fall 2025 by Tej Chajed.
 
 **Please don't fork the repo** since it will make your solutions public. Follow
 the [setup
-instructions](https://tchajed.github.io/sys-verif-fa25/assignments/setup.html)
+instructions](https://tchajed.github.io/sys-verif-fa26/assignments/setup.html)
 on the course website. The instructions also describe how to set up Rocq.
 
 Once you have Rocq installed, build the provided code by running `make`.

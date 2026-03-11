@@ -17,8 +17,8 @@ The root directory has the Rocq setup (`Makefile`, `sys-verif.opam`,
 ## Updating things
 
 ```sh
-./etc/template repo ../sys-verif-fa25-proofs
-./etc/template web ../sys-verif-fa25
+./etc/template repo ../sys-verif-fa26-proofs
+./etc/template web ../sys-verif-fa26
 ```
 
 Update the Software Foundations exercises distributed in `src/software_foundations`:

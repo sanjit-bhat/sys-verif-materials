@@ -2,7 +2,7 @@
 
 set -eu
 
-CLEAN_REPO="$HOME/code/cs839-fa25/sys-verif-fa25-proofs"
+CLEAN_REPO="$HOME/code/cs839-fa26/sys-verif-fa26-proofs"
 
 HW="hw4"
 

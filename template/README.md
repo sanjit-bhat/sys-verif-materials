@@ -98,5 +98,5 @@ Convert literate Coq templates to markdown files for web publishing:
 Re-generate the student proofs repo:
 
 ```bash
-./etc/template repo ../sys-verif-fa25-proofs
+./etc/template repo ../sys-verif-fa26-proofs
 ```

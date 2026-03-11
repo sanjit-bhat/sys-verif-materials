@@ -10,7 +10,7 @@ pageInfo: ["Date", "Category", "Tag", "Word"]
 (* /ONLY-WEB *)
 (*| # Atomic specifications
 
-> Follow these notes in Rocq at [src/sys_verif/notes/atomic_specs.v](https://github.com/tchajed/sys-verif-fa25-proofs/blob/main/src/sys_verif/notes/atomic_specs.v).
+> Follow these notes in Rocq at [src/sys_verif/notes/atomic_specs.v](https://github.com/tchajed/sys-verif-fa26-proofs/blob/main/src/sys_verif/notes/atomic_specs.v).
 
 ## Learning outcomes
 
