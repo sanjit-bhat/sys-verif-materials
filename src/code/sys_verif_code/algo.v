@@ -70,7 +70,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End Person.
 
 Definition Person'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [

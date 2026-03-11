@@ -599,7 +599,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End S1.
 
 Definition S1'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [
@@ -634,7 +633,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End Stack.
 
 Definition Stack'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [
@@ -669,7 +667,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End Queue.
 
 Definition Queue'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [
@@ -712,7 +709,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End SearchTree.
 
 Definition SearchTree'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [
@@ -754,7 +750,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End Person.
 
 Definition Person'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [
@@ -799,7 +794,6 @@ mk {
 #[global] Arguments mk : clear implicits.
 #[global] Arguments t : clear implicits.
 End def.
-
 End Rect.
 
 Definition Rect'fds_unsealed {ext : ffi_syntax} {go_gctx : GoGlobalContext} : list go.field_decl := [
