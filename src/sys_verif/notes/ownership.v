@@ -422,11 +422,10 @@ Qed.
 (* /SOLUTION *)
 
 
-(*| Note that this specification isn't stated for the correct function - you should fix that. |*)
 (* EXERCISE:
 Lemma wp_Rotate (r_ptr0: loc) (width height: w64) :
   {{{ is_pkg_init heap }}}
-    Skip
+    @! heap.Rotate #r_ptr0
   {{{ RET #(); True }}}.
 Proof.
 Abort.
