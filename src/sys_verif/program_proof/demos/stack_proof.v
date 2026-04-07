@@ -56,10 +56,6 @@ Proof.
   wp_auto.
   iStructNamed "H". simpl.
   wp_end.
-  iFrame.
-  iSplitL.
-  - iApply own_slice_empty; done.
-  - iApply own_slice_cap_empty; done.
 Qed.
 
 Lemma wp_Stack__Push l xs (x: w64) :
